@@ -53,7 +53,7 @@ namespace NETCOREM4DatabaseFirst
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Seguridad}/{action=Index}/{id?}");
             });
         }
     }

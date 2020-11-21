@@ -17,6 +17,8 @@ namespace NETCOREM4DatabaseFirst.Models
         {
         }
 
+        public virtual DbSet<Audit> Audits { get; set; }
+        public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Customer> Customers { get; set; }
         public virtual DbSet<Order> Orders { get; set; }
         public virtual DbSet<OrderItem> OrderItems { get; set; }

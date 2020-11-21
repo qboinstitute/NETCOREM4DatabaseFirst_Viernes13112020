@@ -1,6 +1,7 @@
 ﻿
 @{
     ViewData["Title"] = "Index";
+    
 
     List<Customer> clientes = (List<Customer>)ViewBag.ListadoCliente;
     List<Product> productos = (List<Product>)ViewBag.ListadoProducto;
@@ -31,13 +32,18 @@
         <div class="form-group col-md-4">
             <label>Cliente</label>
             <select id="cboCliente" class="form-control">
-                <option selected>Elija un cliente...</option>
+                <option value="-1" selected>Elija un cliente...</option>
                 @foreach (Customer item in clientes)
                 {
                     <option value="@item.Id">@(item.FirstName+ " "+  item.LastName)</option>
                 }
 
             </select>
+        </div>
+
+        <div class="form-group col-md-2">
+            <label>Tipo de Cambio</label>
+            <input type="number" class="form-control" id="txtTipoCambio" value="@ViewBag.TipoCambioEUR" />
         </div>
     </div>
 
@@ -51,7 +57,7 @@
         <div class="form-group col-md-4">
             <label>Producto</label>
             <select id="cboProducto" class="form-control">
-                <option selected>Elija un producto...</option>
+                <option value="-1" selected>Elija un producto...</option>
                 @foreach (Product item in productos)
                 {
                     <option value="@item.Id">@(item.ProductName)</option>
@@ -71,13 +77,17 @@
         </div>
 
         <div class="form-group col-md-2">
-            <button type="button" id="btnAgregarProducto" 
-                    class="btn btn-success">Agregar</button>
+            <button type="button" id="btnAgregarProducto"
+                    class="btn btn-success">
+                Agregar
+            </button>
         </div>
 
         <div class="form-group col-md-2">
-            <button type="button" id="btnConfirmarOrden" 
-                    class="btn btn-info">Confirmar</button>
+            <button disabled type="button" id="btnConfirmarOrden"
+                    class="btn btn-info">
+                Confirmar
+            </button>
         </div>
 
 
@@ -106,7 +116,9 @@
 
 <script>
 
+    CargarListadoProductos();
     CargarListadoOrdenes();
+
 
     function CargarListadoOrdenes() {
         $.ajax({
@@ -121,6 +133,22 @@
 
     }
 
+    $("#divListadoProductos").on('click', '.btnQuitarProducto', function () {
+        var vIdProducto = $(this).attr('data-productid');
+        if (confirm("¿Estás seguro de quitar el producto de la orden?")) {
+            $.ajax({
+                url: "/Venta/QuitarProductoOrden",
+                type: "GET",
+                data: { productID: vIdProducto },
+                cache: false,
+                success: function (data) {
+                    CargarListadoProductos();
+                }
+            });
+
+        }
+
+    });
 
     $("#btnAgregarProducto").click(function () {
         var vProductID = $("#cboProducto").val();
@@ -137,21 +165,73 @@
             },
             cache: false,
             success: function (data) {
-                if (data.value == "DUP") {
+                alert(data);
+                if (data == "DUP") {
                     alert("El producto ya se encuentra agregado a la lista");
                     return false;
                 } else {
-
+                    CargarListadoProductos();
+                    $("#btnConfirmarOrden").attr("disabled", false);
                 }
 
 
 
             }
         });
-
-
     });
-    
+
+    function CargarListadoProductos() {
+
+        $.ajax({
+            type: "GET",
+            url: "/Venta/ListadoProducto",
+            cache: false,
+            success: function (dataHtml) {
+                if (dataHtml != null) {
+                    $("#divListadoProductos").html(dataHtml);
+                } else {
+                    alert("Ocurrió un error en el listado de productos");
+                }
+            }
+        });
+
+    }
+
+
+    $("#btnConfirmarOrden").click(function () {
+        var vCustomerID = $("#cboCliente").val();
+        var vOrderDate = $("#txtFecha").val();
+        var vOrderNumber = $("#txtNroOrden").val();
+
+        $.ajax({
+            type: "POST",
+            url: "/Venta/ConfirmarOrden",
+            data: {
+                customerID: vCustomerID,
+                orderDate: vOrderDate,
+                orderNumber: vOrderNumber
+            },
+            cache: false,
+            success: function (data) {
+                if (data == "NP") {
+                    alert("No se encuentra ningún producto en la orden");
+                    return false;
+                }
+                alert("Se generó la orden N°: " + data);
+                CargarListadoOrdenes();
+            }
+        });
+    });
+
+    function LimpiarControles() {
+        $("#txtFecha").val("");
+        $("#txtNroOrden").val("");
+        $("#cboCliente").val(-1);
+        $("#cboCliente").val(-1);
+        $("#txtCantidad").val(0);
+        $("#txtPrecio").val(0);
+        CargarListadoProductos();
+    }
 
 
 </script>

@@ -1,5 +1,6 @@
 ﻿@{ 
     List<Order> listado = (List<Order>)ViewBag.ListadoOrden;
+    List<Customer> listadoCliente = (List<Customer>)ViewBag.ListadoCliente;
 }
 
 <table id="tbOrdenes" class="table table-striped">
@@ -20,7 +21,7 @@
         <tr>
             <td>@item.OrderNumber</td>
             <td>@item.OrderDate.ToShortDateString()</td>
-            <td>@item.CustomerId</td>
+            <td>@listadoCliente.Where(x=>x.Id == item.CustomerId).FirstOrDefault().LastName</td>
             <td>@item.TotalAmount</td>
             <td></td>
         </tr>

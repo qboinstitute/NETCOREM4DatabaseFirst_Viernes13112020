@@ -22,17 +22,17 @@ namespace NETCOREM4DatabaseFirst.DataAccess
         {
             using (var data = new SalesContext())
             {
-                List<Order> listado = await data.Orders.FromSqlRaw("EXECUTE dbo.SP_SEL_ORDEN").ToListAsync();
+                List<Order> listado = await data.Orders.FromSqlRaw("EXECUTE dbo.SP_SEL_ORDEN ").ToListAsync();
                 return listado;
             }
 
         }
 
 
-        public static async Task<bool> Insertar(Order cabecera, List<OrderItem> detalle)
+        public static async Task<int> Insertar(Order cabecera, List<OrderItem> detalle)
         {
-            bool exito = true;
-
+            //bool exito = true;
+            int newID = -1;
             try
             {
 
@@ -41,12 +41,13 @@ namespace NETCOREM4DatabaseFirst.DataAccess
                     await data.Orders.AddAsync(cabecera);//Id no existe
                     await data.SaveChangesAsync();
 
-                    int newOrderID = cabecera.Id;
+                    newID = cabecera.Id;
+
                     decimal totalAmount = 0;
                     foreach (var item in detalle)
                     {
                         totalAmount = totalAmount + (item.UnitPrice * item.Quantity);
-                        item.OrderId = newOrderID;
+                        item.OrderId = newID;
                     }
 
                     await data.OrderItems.AddRangeAsync(detalle);
@@ -57,12 +58,12 @@ namespace NETCOREM4DatabaseFirst.DataAccess
             }
             catch (Exception)
             {
-                exito = false;
+                newID = -1;
                 throw;
             }
 
 
-            return exito;
+            return newID;
         }
 
 

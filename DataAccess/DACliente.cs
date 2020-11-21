@@ -22,7 +22,7 @@ namespace NETCOREM4DatabaseFirst.DataAccess
         {
             using (var data = new SalesContext())
             {
-                return await data.Customers.ToListAsync();
+                return await data.Customers.OrderBy(x=>x.FirstName).ToListAsync();
             }
 
         }

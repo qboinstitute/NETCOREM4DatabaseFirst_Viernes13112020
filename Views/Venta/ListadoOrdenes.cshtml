@@ -1,0 +1,29 @@
+﻿@{ 
+    List<Order> listado = (List<Order>)ViewBag.ListadoOrden;
+}
+
+<table id="tbOrdenes" class="table table-striped">
+    <thead>
+        <tr>
+            <th>Nro. Orden</th>
+            <th>Fecha de Orden</th>
+            <th>Cliente</th>
+            <th>Monto Total</th>
+            <th></th>
+
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (Order item in listado)
+        {
+        <tr>
+            <td>@item.OrderNumber</td>
+            <td>@item.OrderDate.ToShortDateString()</td>
+            <td>@item.CustomerId</td>
+            <td>@item.TotalAmount</td>
+            <td></td>
+        </tr>
+        }
+    </tbody>
+</table>

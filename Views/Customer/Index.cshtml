@@ -12,6 +12,18 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+
+<div class="row">
+    <div class="col-md-3">
+        @Html.ActionLink("Reporte en CSV", "ReporteCSV")
+    </div>
+    <div class="col-md-3">
+        @Html.ActionLink("Reporte en EXCEL", "ReporteXLS")
+    </div>
+
+</div>
+
+
 <table id="tbClientes" class="table">
     <thead>
         <tr>
